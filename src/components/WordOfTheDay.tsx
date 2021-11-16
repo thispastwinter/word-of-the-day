@@ -28,7 +28,9 @@ export default function WordOfTheDay({ word }: Props) {
       alignItems="center"
       direction="column"
     >
-      <Typography variant="h3">{value}</Typography>
+      <Typography sx={{ textAlign: "center" }} variant="h3">
+        {value}
+      </Typography>
       {syllables && <Typography variant="h6">{syllables}</Typography>}
       {phoneticSpelling && (
         <Typography variant="body1">{phoneticSpelling}</Typography>

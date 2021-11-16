@@ -55,7 +55,7 @@ function getWordOfTheWeek() {
           week_of,
           syllables,
           word,
-          phoneticSpelling: pronunciation?.all || "",
+          phoneticSpelling: pronunciation?.all,
         })
 
         admin.firestore().collection(Collections.WORDS).add(wordOfTheWeek)
