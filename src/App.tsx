@@ -1,5 +1,5 @@
 import { CircularProgress, Grid } from "@mui/material"
-import { WordOfTheWeek } from "./components"
+import { WordOfTheDay } from "./components"
 import useGetWordOfTheWeek from "./hooks/useGetWordOfTheWeek"
 
 function App() {
@@ -14,11 +14,7 @@ function App() {
         style={{ height: "100vh" }}
         direction="column"
       >
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <WordOfTheWeek word={wordOfTheWeek} />
-        )}
+        {loading ? <CircularProgress /> : <WordOfTheDay word={wordOfTheWeek} />}
       </Grid>
     </div>
   )

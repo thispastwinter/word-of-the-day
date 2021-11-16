@@ -16,8 +16,8 @@ interface WordResponse {
     count: number
     list: string[]
   }
-  pronunciation: {
-    all: string
+  pronunciation?: {
+    all?: string
   }
   frequency: number
 }

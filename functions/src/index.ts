@@ -41,10 +41,9 @@ function getWordOfTheWeek() {
   instance
     .get<WordResponse>(url)
     .then((res) => {
-      const word = res.data.word
+      const { word, pronunciation } = res.data
       const syllables = res.data.syllables
       const { definition, partOfSpeech } = res.data.results[0]
-      const { pronunciation } = res.data
       const week_of =
         admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp
 
@@ -54,7 +53,7 @@ function getWordOfTheWeek() {
         week_of,
         syllables,
         word,
-        phoneticSpelling: pronunciation.all,
+        phoneticSpelling: pronunciation?.all || "",
       })
 
       admin.firestore().collection(Collections.WORDS).add(wordOfTheWeek)

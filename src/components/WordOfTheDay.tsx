@@ -11,7 +11,7 @@ export default function WordOfTheDay({ word }: Props) {
     throw new Error("Error fetching word!")
   }
 
-  const { definition, word: value } = word
+  const { definition, word: value, phoneticSpelling, partOfSpeech } = word
   const syllables = useMemo(() => `[${word.syllables.list.join("-")}]`, [word])
 
   return (
@@ -23,7 +23,9 @@ export default function WordOfTheDay({ word }: Props) {
     >
       <Typography variant="h3">{value}</Typography>
       <Typography variant="h6">{syllables}</Typography>
-      <Typography variant="body1" style={{ color: "gray" }}>
+      <Typography variant="body1">{phoneticSpelling}</Typography>
+      <Typography variant="body1">{partOfSpeech}</Typography>
+      <Typography variant="body2" style={{ color: "gray" }}>
         {definition}
       </Typography>
     </Grid>

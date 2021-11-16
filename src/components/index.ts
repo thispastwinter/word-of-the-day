@@ -1,3 +1,3 @@
-import WordOfTheWeek from "./WordOfTheWeek"
+import WordOfTheDay from "./WordOfTheDay"
 
-export { WordOfTheWeek }
+export { WordOfTheDay }
