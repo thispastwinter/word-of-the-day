@@ -12,7 +12,7 @@ function App() {
         container
         justifyContent="center"
         alignItems="center"
-        style={{ height }}
+        sx={{ height, overflow: "hidden" }}
         direction="column"
       >
         {loading ? <CircularProgress /> : <WordOfTheDay word={wordOfTheWeek} />}

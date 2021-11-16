@@ -1,10 +1,14 @@
 {
   "extends": "@cremalab/scripts-web/configs/tsconfig.json",
   "include": [
-    "src" 
-   ],
+    "src"
+  ],
   "compilerOptions": {
     "noFallthroughCasesInSwitch": true,
-    "jsx": "react-jsx"
-  }
+    "jsx": "preserve",
+    "incremental": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
