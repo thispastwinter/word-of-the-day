@@ -69,5 +69,5 @@ function getWordOfTheWeek() {
 }
 
 exports.getRandomWord = functions.pubsub
-  .schedule("every 5 minutes")
+  .schedule("0 0 * * *")
   .onRun(getWordOfTheWeek)
