@@ -5,6 +5,7 @@ import { Word, WordResponse } from "../../global/types"
 import Collections from "../constants/collections"
 
 admin.initializeApp()
+admin.firestore().settings({ ignoreUndefinedProperties: true })
 
 const config = functions.config()
 
@@ -41,22 +42,26 @@ function getWordOfTheWeek() {
   instance
     .get<WordResponse>(url)
     .then((res) => {
-      const { word, pronunciation } = res.data
-      const syllables = res.data.syllables
-      const { definition, partOfSpeech } = res.data.results[0]
-      const week_of =
-        admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp
+      if (res.data) {
+        const { word, pronunciation } = res.data
+        const syllables = res.data.syllables
+        const { definition, partOfSpeech } = res.data.results[0]
+        const week_of =
+          admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp
 
-      const wordOfTheWeek = generateWordOfTheWeek({
-        definition,
-        partOfSpeech,
-        week_of,
-        syllables,
-        word,
-        phoneticSpelling: pronunciation?.all || "",
-      })
+        const wordOfTheWeek = generateWordOfTheWeek({
+          definition,
+          partOfSpeech,
+          week_of,
+          syllables,
+          word,
+          phoneticSpelling: pronunciation?.all || "",
+        })
 
-      admin.firestore().collection(Collections.WORDS).add(wordOfTheWeek)
+        admin.firestore().collection(Collections.WORDS).add(wordOfTheWeek)
+      } else {
+        throw new Error("No data!")
+      }
     })
     .catch((err) => {
       throw new Error(`Word retrieval failed: ${err}`)

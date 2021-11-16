@@ -12,7 +12,10 @@ export default function WordOfTheDay({ word }: Props) {
   }
 
   const { definition, word: value, phoneticSpelling, partOfSpeech } = word
-  const syllables = useMemo(() => `[${word.syllables.list.join("-")}]`, [word])
+  const syllables = useMemo(
+    () => `[${word.syllables?.list?.join("-")}]`,
+    [word],
+  )
 
   return (
     <Grid
