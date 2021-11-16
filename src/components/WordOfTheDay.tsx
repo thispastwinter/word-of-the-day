@@ -12,10 +12,14 @@ export default function WordOfTheDay({ word }: Props) {
   }
 
   const { definition, word: value, phoneticSpelling, partOfSpeech } = word
-  const syllables = useMemo(
-    () => `[${word.syllables?.list?.join("-")}]`,
-    [word],
-  )
+
+  const syllables = useMemo(() => {
+    if (word.syllables?.list?.length) {
+      return `[${word.syllables.list?.join("-")}]`
+    } else {
+      return undefined
+    }
+  }, [word])
 
   return (
     <Grid
@@ -25,12 +29,16 @@ export default function WordOfTheDay({ word }: Props) {
       direction="column"
     >
       <Typography variant="h3">{value}</Typography>
-      <Typography variant="h6">{syllables}</Typography>
-      <Typography variant="body1">{phoneticSpelling}</Typography>
-      <Typography variant="body1">{partOfSpeech}</Typography>
-      <Typography variant="body2" style={{ color: "gray" }}>
-        {definition}
-      </Typography>
+      {syllables && <Typography variant="h6">{syllables}</Typography>}
+      {phoneticSpelling && (
+        <Typography variant="body1">{phoneticSpelling}</Typography>
+      )}
+      {partOfSpeech && <Typography variant="body1">{partOfSpeech}</Typography>}
+      {definition && (
+        <Typography variant="body2" style={{ color: "gray" }}>
+          {definition}
+        </Typography>
+      )}
     </Grid>
   )
 }
