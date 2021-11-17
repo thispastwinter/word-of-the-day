@@ -1,9 +1,7 @@
-import * as firebase from "../../functions/node_modules/firebase-admin/lib"
-
 interface UserPartial {
-  id: firebase.auth.UserRecord["uid"]
+  id: string | null
   group: string
-  displayName: firebase.auth.UserRecord["displayName"]
+  displayName: string | null
 }
 
 export default UserPartial
