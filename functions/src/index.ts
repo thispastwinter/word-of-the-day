@@ -1,8 +1,10 @@
 import axios from "axios"
+import * as cors from "cors"
 import * as admin from "firebase-admin"
 import * as functions from "firebase-functions"
+import { Collections, Urls } from "../../global/constants"
 import { UserPartial, Word, WordResponse } from "../../global/types"
-import Collections from "../constants/collections"
+import { getPartOfSpeech, getRandomNumber } from "../../global/utils"
 
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -15,20 +17,9 @@ const headers = {
 }
 
 const instance = axios.create({
-  baseURL: "https://wordsapiv1.p.rapidapi.com/words",
+  baseURL: Urls.WORDS_BASE_URL,
   headers,
 })
-
-const getRandomNumber = (min: number, max: number) => {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
-const getPartOfSpeech = (index: number) => {
-  const partsOfSpeech = ["verb", "adjective"]
-  return partsOfSpeech[index]
-}
 
 const generateWordOfTheWeek = (args: Word) => args
 
@@ -38,16 +29,23 @@ const partOfSpeech = getPartOfSpeech(getRandomNumber(0, 1))
 
 const url = `/?random=true&partOfSpeech=${partOfSpeech}&diversity=0.5&lettersMin=${letterCount}`
 
-function getWordOfTheWeek() {
+async function getWordOfTheWeek() {
   instance
     .get<WordResponse>(url)
-    .then((res) => {
-      if (res.data) {
-        const { word, pronunciation } = res.data
-        const syllables = res.data.syllables
-        const { definition, partOfSpeech } = res.data.results[0]
-        const week_of =
-          admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp
+    .then(async (res) => {
+      const groups = await admin
+        .firestore()
+        .collection(Collections.GROUPS)
+        .get()
+
+      const { word, pronunciation } = res.data
+      const syllables = res.data.syllables
+      const { definition, partOfSpeech } = res.data.results[0]
+      const week_of =
+        admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp
+
+      groups.forEach((doc) => {
+        const groupId = doc.data().id as string | undefined
 
         const wordOfTheWeek = generateWordOfTheWeek({
           definition,
@@ -56,12 +54,11 @@ function getWordOfTheWeek() {
           syllables,
           word,
           phoneticSpelling: pronunciation?.all,
+          groupId,
         })
 
         admin.firestore().collection(Collections.WORDS).add(wordOfTheWeek)
-      } else {
-        throw new Error("No data!")
-      }
+      })
     })
     .catch((err) => {
       throw new Error(`Word retrieval failed: ${err}`)
@@ -72,10 +69,24 @@ exports.getRandomWord = functions.pubsub
   .schedule("0 0 * * *")
   .onRun(getWordOfTheWeek)
 
+exports.shuffleWord = functions.https.onRequest((req, res) =>
+  cors({ origin: true })(req, res, () => {
+    getWordOfTheWeek()
+      .then(() => {
+        res.status(200)
+        res.end()
+      })
+      .catch(() => {
+        res.status(500)
+        res.end()
+      })
+  }),
+)
+
 exports.onSignIn = functions.auth.user().onCreate((user) => {
   const partialUser: UserPartial = {
-    displayName: user.displayName,
-    group: "",
+    groupId: "",
+    isAdmin: false,
     id: user.uid,
   }
 
