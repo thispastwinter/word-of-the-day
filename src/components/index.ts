@@ -1,3 +1,4 @@
+import Center from "./Center"
 import WordOfTheDay from "./WordOfTheDay"
 
-export { WordOfTheDay }
+export { WordOfTheDay, Center }

@@ -1,24 +1,15 @@
-import { CircularProgress, Grid } from "@mui/material"
-import { WordOfTheDay } from "../components"
-import { useGetWordOfTheWeek, useWindowSize } from "../hooks"
+import { CircularProgress } from "@mui/material"
+import { Center, WordOfTheDay } from "../components"
+import { useGetWordOfTheWeek } from "../hooks"
 
 function Home() {
   const { wordOfTheWeek, loading } = useGetWordOfTheWeek()
-  const { height } = useWindowSize()
-
-  console.log(wordOfTheWeek)
 
   return (
     <div className="App">
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        sx={{ height, overflow: "hidden" }}
-        direction="column"
-      >
+      <Center fill>
         {loading ? <CircularProgress /> : <WordOfTheDay word={wordOfTheWeek} />}
-      </Grid>
+      </Center>
     </div>
   )
 }

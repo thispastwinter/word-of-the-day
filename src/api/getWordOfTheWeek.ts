@@ -1,6 +1,6 @@
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore"
 import { Word } from "../../global/types"
-import db from "../firebase"
+import { db } from "../firebase"
 
 const getWordOfTheWeek = async () => {
   const wordRef = collection(db, "words")
