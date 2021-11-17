@@ -13,5 +13,6 @@ export default function useSignIn() {
       alert(err.message)
     }
   }
+
   return { signInWithGoogle }
 }

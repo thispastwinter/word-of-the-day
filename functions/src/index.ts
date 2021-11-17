@@ -1,7 +1,7 @@
 import axios from "axios"
 import * as admin from "firebase-admin"
 import * as functions from "firebase-functions"
-import { Word, WordResponse } from "../../global/types"
+import { UserPartial, Word, WordResponse } from "../../global/types"
 import Collections from "../constants/collections"
 
 admin.initializeApp()
@@ -71,3 +71,13 @@ function getWordOfTheWeek() {
 exports.getRandomWord = functions.pubsub
   .schedule("0 0 * * *")
   .onRun(getWordOfTheWeek)
+
+exports.onSignIn = functions.auth.user().onCreate((user) => {
+  const partialUser: UserPartial = {
+    displayName: user.displayName,
+    group: "",
+    id: user.uid,
+  }
+
+  admin.firestore().collection(Collections.USERS).add(partialUser)
+})

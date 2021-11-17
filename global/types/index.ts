@@ -1,4 +1,5 @@
+import UserPartial from "./UserPartial"
 import Word from "./Word"
 import WordResponse from "./WordResponse"
 
-export type { Word, WordResponse }
+export type { Word, WordResponse, UserPartial }
