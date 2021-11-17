@@ -1,7 +1,7 @@
 interface UserPartial {
   id: string | null
-  group: string
-  displayName: string | null
+  groupId: string
+  isAdmin: boolean
 }
 
 export default UserPartial

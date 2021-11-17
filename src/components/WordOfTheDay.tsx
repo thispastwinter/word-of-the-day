@@ -1,15 +1,21 @@
-import { Grid, Typography } from "@mui/material"
-import { useMemo } from "react"
-import { Word } from "../../global/types"
+import { User } from "@firebase/auth"
+import { Button, Grid, Typography } from "@mui/material"
+import { useCallback, useMemo } from "react"
+import { UserPartial, Word } from "../../global/types"
+import { useShuffleWord } from "../hooks"
 
 interface Props {
   word?: Word
+  user: User & UserPartial
+  onShuffle: () => void
 }
 
-export default function WordOfTheDay({ word }: Props) {
+export default function WordOfTheDay({ word, user, onShuffle }: Props) {
   if (!word) {
     throw new Error("Error fetching word!")
   }
+
+  const { shuffleWord } = useShuffleWord()
 
   const { definition, word: value, phoneticSpelling, partOfSpeech } = word
 
@@ -21,6 +27,11 @@ export default function WordOfTheDay({ word }: Props) {
     }
   }, [word])
 
+  const handleShuffle = useCallback(() => {
+    shuffleWord()
+    onShuffle()
+  }, [onShuffle, shuffleWord])
+
   return (
     <Grid
       container
@@ -28,6 +39,7 @@ export default function WordOfTheDay({ word }: Props) {
       alignItems="center"
       direction="column"
     >
+      {user.isAdmin && <Button onClick={handleShuffle}>Shuffle</Button>}
       <Typography sx={{ textAlign: "center" }} variant="h3">
         {value}
       </Typography>
@@ -37,7 +49,11 @@ export default function WordOfTheDay({ word }: Props) {
       )}
       {partOfSpeech && <Typography variant="body1">{partOfSpeech}</Typography>}
       {definition && (
-        <Typography variant="body2" style={{ color: "gray" }}>
+        <Typography
+          sx={{ textAlign: "center" }}
+          variant="body2"
+          style={{ color: "gray" }}
+        >
           {definition}
         </Typography>
       )}

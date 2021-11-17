@@ -1,11 +1,24 @@
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore"
+import {
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore"
+import { Collections } from "../../global/constants"
 import { Word } from "../../global/types"
 import { db } from "../firebase"
 
-const getWordOfTheWeek = async () => {
-  const wordRef = collection(db, "words")
-  const q = query(wordRef, orderBy("week_of", "desc"), limit(1))
-  const data = await getDocs(q)
+const getWordOfTheWeek = async (groupId: string) => {
+  const wordRef = collection(db, Collections.WORDS)
+  const wordQuery = query(
+    wordRef,
+    where("groupId", "==", `${groupId}`),
+    orderBy("week_of", "desc"),
+    limit(1),
+  )
+  const data = await getDocs(wordQuery)
   const wordOfTheWeek = (data?.docs?.[0]?.data() || undefined) as
     | Word
     | undefined
