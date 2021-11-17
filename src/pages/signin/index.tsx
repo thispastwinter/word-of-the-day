@@ -2,10 +2,11 @@ import { Box } from "@mui/system"
 import Image from "next/image"
 import googleSignIn from "../../assets/googleSignIn.svg"
 import { Center } from "../../components"
-import useSignIn from "../../hooks/useSignIn"
+import { useAuth, useSignIn } from "../../hooks"
 
 export default function SignIn() {
   const { signInWithGoogle } = useSignIn()
+  useAuth()
 
   return (
     <Center fill>
