@@ -38,7 +38,7 @@ function Home({ user }: Props) {
           <Box pr={2} />
           <Typography>{group?.name}</Typography>
         </Box>
-        <Box sx={{ marginLeft: "auto", paddingRight: 2 }}>
+        <Box sx={{ marginLeft: "auto" }}>
           <Button onClick={() => auth.signOut()}>Sign Out</Button>
         </Box>
       </AppBar>
