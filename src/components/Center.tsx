@@ -1,7 +1,6 @@
 import { Grid, Theme } from "@mui/material"
 import { SxProps } from "@mui/system"
 import { ReactNode } from "react"
-import { useWindowSize } from "../hooks"
 
 interface Props {
   children: ReactNode
@@ -10,13 +9,12 @@ interface Props {
 }
 
 export default function Center({ children, sx, fill }: Props) {
-  const { height } = useWindowSize()
   return (
     <Grid
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ ...sx, height: fill ? height : undefined }}
+      sx={{ ...sx, height: fill ? "100vh" : undefined }}
       direction="column"
     >
       {children}

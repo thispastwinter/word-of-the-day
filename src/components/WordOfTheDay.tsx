@@ -72,32 +72,39 @@ export default function WordOfTheDay({ word, user, onShuffle }: Props) {
       />
       <Grid
         container
+        direction="column"
         justifyContent="center"
         alignItems="center"
-        direction="column"
       >
-        {user.isAdmin && <Button onClick={handleShuffle}>Shuffle</Button>}
-        <Typography sx={{ textAlign: "center" }} variant="h3">
-          {value}
-        </Typography>
-        {syllables && <Typography variant="h6">{syllables}</Typography>}
-        {phoneticSpelling && (
-          <Typography variant="body1">{phoneticSpelling}</Typography>
-        )}
-        {partOfSpeech && (
-          <Typography variant="body1">{partOfSpeech}</Typography>
-        )}
-        {definition && (
-          <Typography
-            sx={{ textAlign: "center" }}
-            variant="body2"
-            style={{ color: "gray" }}
-          >
-            {definition}
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          direction="column"
+        >
+          {user.isAdmin && <Button onClick={handleShuffle}>Shuffle</Button>}
+          <Typography sx={{ textAlign: "center" }} variant="h3">
+            {value}
           </Typography>
-        )}
+          {syllables && <Typography variant="h6">{syllables}</Typography>}
+          {phoneticSpelling && (
+            <Typography variant="body1">{phoneticSpelling}</Typography>
+          )}
+          {partOfSpeech && (
+            <Typography variant="body1">{partOfSpeech}</Typography>
+          )}
+          {definition && (
+            <Typography
+              sx={{ textAlign: "center" }}
+              variant="body2"
+              style={{ color: "gray" }}
+            >
+              {definition}
+            </Typography>
+          )}
+        </Grid>
+        <Comments comments={comments || []} onAddComment={openModal} />
       </Grid>
-      <Comments comments={comments || []} onAddComment={openModal} />
     </>
   )
 }
