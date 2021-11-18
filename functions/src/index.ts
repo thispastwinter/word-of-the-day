@@ -81,7 +81,7 @@ exports.getRandomWord = functions.pubsub
 
 exports.shuffleWord = functions.https.onRequest((req, res) =>
   cors({ origin: true })(req, res, () => {
-    getWordOfTheWeek(req.body.groupId)
+    getWordOfTheWeek(req.params.groupId)
       .then(() => {
         res.status(200)
         res.end()
