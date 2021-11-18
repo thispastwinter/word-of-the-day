@@ -23,7 +23,7 @@ function Home({ user }: Props) {
   const loading = wordLoading || groupLoading
 
   return (
-    <Box sx={{ overflowY: "hidden" }}>
+    <Box sx={{ overflowX: "hidden" }}>
       <AppBar
         color="transparent"
         sx={{
