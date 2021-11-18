@@ -26,7 +26,7 @@ export default function CommentModal({
         sx={{
           padding: 2,
           margin: 1,
-          width: "25rem",
+          width: "100%",
           display: "flex",
           flexDirection: "column",
         }}
