@@ -11,7 +11,8 @@ interface Word {
     list?: string[]
   }
   phoneticSpelling?: string
-  groupId?: string
+  groupId: string
+  id: string
 }
 
 export default Word

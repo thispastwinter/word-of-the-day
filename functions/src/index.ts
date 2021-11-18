@@ -45,9 +45,10 @@ async function getWordOfTheWeek() {
         admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp
 
       groups.forEach((doc) => {
-        const groupId = doc.data().id as string | undefined
+        const groupId = doc.data().id as string
 
         const wordOfTheWeek = generateWordOfTheWeek({
+          id: doc.id,
           definition,
           partOfSpeech,
           week_of,
