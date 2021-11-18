@@ -11,23 +11,27 @@ interface Props {
 
 export default function Comments({ comments, onAddComment }: Props) {
   return (
-    <Grid sx={{ width: "30rem" }}>
+    <Grid>
       <Box
         py={3}
         sx={{
-          alignItems: "center",
           display: "flex",
           flexDirection: "column",
-          width: "100%",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", paddingBottom: 1 }}>
-          <Button variant="text" sx={{ lineHeight: 0 }} onClick={onAddComment}>
-            Leave a comment{" "}
-            <Box sx={{ paddingLeft: 2 }}>
-              <Comment />
-            </Box>
-          </Button>
+          <Box mr="auto" ml="auto">
+            <Button
+              variant="text"
+              sx={{ lineHeight: 0 }}
+              onClick={onAddComment}
+            >
+              Leave a comment{" "}
+              <Box sx={{ paddingLeft: 2 }}>
+                <Comment />
+              </Box>
+            </Button>
+          </Box>
         </Box>
         {comments?.map((comment) => (
           <Box

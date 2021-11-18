@@ -29,7 +29,10 @@ const partOfSpeech = getPartOfSpeech(getRandomNumber(0, 1))
 
 const url = `/?random=true&partOfSpeech=${partOfSpeech}&diversity=0.5&lettersMin=${letterCount}`
 
-async function getWordOfTheWeek(groupId: string) {
+async function getWordOfTheWeek(groupId?: string) {
+  if (!groupId) {
+    throw new Error("groupId not found")
+  }
   instance
     .get<WordResponse>(url)
     .then(async (res) => {
@@ -61,11 +64,11 @@ async function getWordOfTheWeek(groupId: string) {
             .update({ id: doc.id })
         })
         .catch((err) => {
-          throw new Error(`Document update failed: ${err}`)
+          console.error(`Document update failed: ${err}`)
         })
     })
     .catch((err) => {
-      throw new Error(`Word retrieval failed: ${err}`)
+      console.error(`Word retrieval failed: ${err}`)
     })
 }
 
