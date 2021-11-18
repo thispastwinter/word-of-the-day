@@ -25,6 +25,7 @@ export default function CommentModal({
       <Card
         sx={{
           padding: 2,
+          margin: 1,
           width: "25rem",
           display: "flex",
           flexDirection: "column",
