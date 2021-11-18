@@ -21,7 +21,7 @@ const instance = axios.create({
   headers,
 })
 
-const generateWordOfTheWeek = (args: Word) => args
+const generateWordOfTheWeek = (args: Partial<Word>) => args
 
 const letterCount = getRandomNumber(8, 12)
 
@@ -29,37 +29,40 @@ const partOfSpeech = getPartOfSpeech(getRandomNumber(0, 1))
 
 const url = `/?random=true&partOfSpeech=${partOfSpeech}&diversity=0.5&lettersMin=${letterCount}`
 
-async function getWordOfTheWeek() {
+async function getWordOfTheWeek(groupId: string) {
   instance
     .get<WordResponse>(url)
     .then(async (res) => {
-      const groups = await admin
-        .firestore()
-        .collection(Collections.GROUPS)
-        .get()
-
       const { word, pronunciation } = res.data
       const syllables = res.data.syllables
       const { definition, partOfSpeech } = res.data.results[0]
       const week_of =
         admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp
 
-      groups.forEach((doc) => {
-        const groupId = doc.data().id as string
-
-        const wordOfTheWeek = generateWordOfTheWeek({
-          id: doc.id,
-          definition,
-          partOfSpeech,
-          week_of,
-          syllables,
-          word,
-          phoneticSpelling: pronunciation?.all,
-          groupId,
-        })
-
-        admin.firestore().collection(Collections.WORDS).add(wordOfTheWeek)
+      const wordOfTheWeek = generateWordOfTheWeek({
+        definition,
+        partOfSpeech,
+        week_of,
+        syllables,
+        word,
+        phoneticSpelling: pronunciation?.all,
+        groupId,
       })
+
+      admin
+        .firestore()
+        .collection(Collections.WORDS)
+        .add(wordOfTheWeek)
+        .then((doc) => {
+          admin
+            .firestore()
+            .collection(Collections.WORDS)
+            .doc(doc.id)
+            .update({ id: doc.id })
+        })
+        .catch((err) => {
+          throw new Error(`Document update failed: ${err}`)
+        })
     })
     .catch((err) => {
       throw new Error(`Word retrieval failed: ${err}`)
@@ -68,11 +71,17 @@ async function getWordOfTheWeek() {
 
 exports.getRandomWord = functions.pubsub
   .schedule("0 0 * * *")
-  .onRun(getWordOfTheWeek)
+  .onRun(async () => {
+    const groups = await admin.firestore().collection(Collections.GROUPS).get()
+    groups.forEach((doc) => {
+      const groupId = doc.data().id as string
+      getWordOfTheWeek(groupId)
+    })
+  })
 
 exports.shuffleWord = functions.https.onRequest((req, res) =>
   cors({ origin: true })(req, res, () => {
-    getWordOfTheWeek()
+    getWordOfTheWeek(req.body.groupId)
       .then(() => {
         res.status(200)
         res.end()
@@ -86,7 +95,7 @@ exports.shuffleWord = functions.https.onRequest((req, res) =>
 
 exports.onSignIn = functions.auth.user().onCreate((user) => {
   const partialUser: UserPartial = {
-    groupId: "",
+    groupId: "public",
     isAdmin: false,
     id: user.uid,
   }

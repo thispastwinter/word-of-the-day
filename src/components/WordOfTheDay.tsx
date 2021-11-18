@@ -37,9 +37,9 @@ export default function WordOfTheDay({ word, user, onShuffle }: Props) {
   }, [word])
 
   const handleShuffle = useCallback(() => {
-    shuffleWord()
+    shuffleWord(user.groupId)
     onShuffle()
-  }, [onShuffle, shuffleWord])
+  }, [onShuffle, shuffleWord, user])
 
   const openModal = () => {
     setOpen(true)
