@@ -2,6 +2,7 @@ import { User } from "@firebase/auth"
 import { Timestamp } from "@firebase/firestore"
 import { Button, Grid, Typography } from "@mui/material"
 import { useCallback, useMemo, useState } from "react"
+import { IDs } from "../../global/constants"
 import { UserPartial, Word } from "../../global/types"
 import createComment from "../api/createComment"
 import { useGetComments, useShuffleWord } from "../hooks"
@@ -11,10 +12,9 @@ import Comments from "./Comments"
 interface Props {
   word?: Word
   user: User & UserPartial
-  onShuffle: () => void
 }
 
-export default function WordOfTheDay({ word, user, onShuffle }: Props) {
+export default function WordOfTheDay({ word, user }: Props) {
   const [open, setOpen] = useState(false)
   const [body, setBody] = useState("")
 
@@ -24,7 +24,7 @@ export default function WordOfTheDay({ word, user, onShuffle }: Props) {
 
   const { shuffleWord } = useShuffleWord()
 
-  const { comments } = useGetComments(word.id, user.groupId)
+  const { data } = useGetComments(word.id, user.groupId)
 
   const { definition, word: value, phoneticSpelling, partOfSpeech } = word
 
@@ -38,8 +38,7 @@ export default function WordOfTheDay({ word, user, onShuffle }: Props) {
 
   const handleShuffle = useCallback(() => {
     shuffleWord(user.groupId)
-    onShuffle()
-  }, [onShuffle, shuffleWord, user])
+  }, [shuffleWord, user])
 
   const openModal = () => {
     setOpen(true)
@@ -53,7 +52,7 @@ export default function WordOfTheDay({ word, user, onShuffle }: Props) {
     createComment({
       body,
       groupId: user.groupId,
-      userId: user.uid,
+      userId: user.id || "",
       wordId: word.id,
       displayName: user.displayName || "",
       createdAt: Timestamp.now(),
@@ -95,15 +94,19 @@ export default function WordOfTheDay({ word, user, onShuffle }: Props) {
           )}
           {definition && (
             <Typography
-              sx={{ textAlign: "center" }}
+              color="gray"
+              sx={{
+                textAlign: "center",
+              }}
               variant="body2"
-              style={{ color: "gray" }}
             >
               {definition}
             </Typography>
           )}
         </Grid>
-        <Comments comments={comments || []} onAddComment={openModal} />
+        {user.groupId !== IDs.PUBLIC_GROUP_ID && (
+          <Comments comments={data || []} onAddComment={openModal} />
+        )}
       </Grid>
     </>
   )

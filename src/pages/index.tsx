@@ -1,9 +1,9 @@
 import { User } from "@firebase/auth"
-import { Group } from "@mui/icons-material"
-import { AppBar, Button, CircularProgress, Typography } from "@mui/material"
+import { CircularProgress, Typography } from "@mui/material"
 import { Box } from "@mui/system"
+import { useState } from "react"
 import { UserPartial } from "../../global/types"
-import { Center, WordOfTheDay } from "../components"
+import { AppBar, Center, Modal, WordOfTheDay } from "../components"
 import { auth } from "../firebase"
 import { useGetWordOfTheWeek } from "../hooks"
 import useGetGroupById from "../hooks/useGetGroupById"
@@ -13,44 +13,58 @@ interface Props {
 }
 
 function Home({ user }: Props) {
-  const {
-    wordOfTheWeek,
-    loading: wordLoading,
-    setLoading,
-  } = useGetWordOfTheWeek(user.groupId)
+  const { data: word, loading: wordLoading } = useGetWordOfTheWeek(user.groupId)
   const { group, loading: groupLoading } = useGetGroupById(user.groupId)
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false)
+
+  const openSettings = () => {
+    setSettingsModalOpen(true)
+  }
+
+  const closeSettings = () => {
+    setSettingsModalOpen(false)
+  }
 
   const loading = wordLoading || groupLoading
 
   return (
     <>
+      <Modal open={settingsModalOpen} onBackdropClick={closeSettings}>
+        <Box>
+          <Typography
+            variant="body2"
+            pr={1}
+            sx={{ textAlign: "center", fontWeight: "600" }}
+          >
+            Your Group ID:
+          </Typography>
+          <Typography sx={{ textAlign: "center" }} variant="body2">
+            {user.groupId}
+          </Typography>
+        </Box>
+        <Typography
+          sx={{ color: ({ palette }) => palette.error.dark }}
+          pt={1}
+          variant="caption"
+        >
+          only share your group id with people you trust
+        </Typography>
+      </Modal>
       <AppBar
-        color="transparent"
+        group={group}
+        user={user}
+        onSettingsClick={openSettings}
+        onSignOutClick={() => auth.signOut()}
+      />
+      <Center
         sx={{
-          boxShadow: "none",
-          flexDirection: "row",
-          padding: 2,
-          alignItems: "center",
+          marginTop: 24,
         }}
       >
-        <Box sx={{ flexDirection: "row", display: "flex" }}>
-          <Group color="inherit" />
-          <Box pr={2} />
-          <Typography>{group?.name}</Typography>
-        </Box>
-        <Box sx={{ marginLeft: "auto" }}>
-          <Button onClick={() => auth.signOut()}>Sign Out</Button>
-        </Box>
-      </AppBar>
-      <Center fill>
         {loading ? (
           <CircularProgress />
         ) : (
-          <WordOfTheDay
-            word={wordOfTheWeek}
-            user={user}
-            onShuffle={() => setLoading(true)}
-          />
+          <WordOfTheDay word={word} user={user} />
         )}
       </Center>
     </>

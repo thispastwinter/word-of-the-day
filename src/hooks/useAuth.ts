@@ -1,43 +1,45 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { User } from "@firebase/auth"
-import { collection, getDocs, query, where } from "@firebase/firestore"
+import { Query, collection, query, where } from "@firebase/firestore"
 import { useRouter } from "next/dist/client/router"
 import { useEffect, useState } from "react"
+import { useCollectionData } from "react-firebase-hooks/firestore"
 import { Collections } from "../../global/constants"
 import { UserPartial } from "../../global/types"
 import { auth, db } from "../firebase"
 
-export async function getUserPartial(id: string) {
-  const usersRef = collection(db, Collections.USERS)
-  const userQuery = query(usersRef, where("id", "==", `${id}`))
-  const data = await getDocs(userQuery)
-  const userPartial = data?.docs?.[0].data() as UserPartial | undefined
-  return { userPartial }
-}
-
 export default function useAuth() {
-  const [user, setUser] = useState<(User & UserPartial) | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [authLoading, setAuthLoading] = useState(true)
+
+  const usersRef = collection(db, Collections.USERS)
+  const userQuery = query(
+    usersRef,
+    where("userId", "==", `${user?.uid}`),
+  ) as Query<UserPartial>
+
+  const [userPartial, userLoading] = useCollectionData(userQuery, {
+    idField: "id",
+  })
 
   const router = useRouter()
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const { userPartial } = await getUserPartial(user.uid)
-        if (user && userPartial) {
-          setUser({ ...user, ...userPartial })
-        }
-        setLoading(false)
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser)
+        setAuthLoading(false)
         router.push("/")
       } else {
         setUser(null)
-        setLoading(false)
+        setAuthLoading(false)
         router.push("/signin")
       }
     })
     return () => unsubscribe()
   }, [])
 
-  return { user, loading }
+  const loading = authLoading || userLoading
+
+  return { user: { ...user, ...userPartial?.[0] }, loading }
 }

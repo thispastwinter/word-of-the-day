@@ -2,7 +2,7 @@ import axios from "axios"
 import * as cors from "cors"
 import * as admin from "firebase-admin"
 import * as functions from "firebase-functions"
-import { Collections, Urls } from "../../global/constants"
+import { Collections, IDs, Urls } from "../../global/constants"
 import { UserPartial, Word, WordResponse } from "../../global/types"
 import { getPartOfSpeech, getRandomNumber } from "../../global/utils"
 
@@ -98,7 +98,7 @@ exports.shuffleWord = functions.https.onRequest((req, res) =>
 
 exports.onSignIn = functions.auth.user().onCreate((user) => {
   const partialUser: UserPartial = {
-    groupId: "public",
+    groupId: IDs.PUBLIC_GROUP_ID,
     isAdmin: false,
     id: user.uid,
   }

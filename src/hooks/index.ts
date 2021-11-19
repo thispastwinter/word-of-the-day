@@ -1,4 +1,5 @@
 import useAuth from "./useAuth"
+import useFirestoreMutation from "./useFirestoreMutation"
 import useGetComments from "./useGetComments"
 import useGetWordOfTheWeek from "./useGetWordOfTheWeek"
 import useShuffleWord from "./useShuffleWord"
@@ -12,4 +13,5 @@ export {
   useAuth,
   useSignIn,
   useShuffleWord,
+  useFirestoreMutation,
 }

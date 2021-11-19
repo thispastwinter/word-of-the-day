@@ -42,16 +42,16 @@ export default function Comments({ comments, onAddComment }: Props) {
             }}
           >
             <Typography
-              sx={{ paddingRight: 1, fontWeight: 600 }}
+              sx={{ paddingRight: 2, fontWeight: 600 }}
               variant="body2"
             >
               {comment.displayName}:
             </Typography>
-            <Typography sx={{ paddingRight: 1 }} variant="body2">
+            <Typography sx={{ paddingRight: 2 }} variant="body2">
               {comment.body}
             </Typography>
-            <Typography variant="caption" sx={{ color: "gray" }}>
-              @{" "}
+            <Typography variant="body2" color="gray">
+              @
               {convertTimeStampToDate(
                 comment.createdAt.seconds,
                 comment.createdAt.nanoseconds,
