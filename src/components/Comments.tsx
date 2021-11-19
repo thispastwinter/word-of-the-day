@@ -1,8 +1,9 @@
-import { Comment } from "@mui/icons-material"
-import { Button, Grid, Typography } from "@mui/material"
+import { ArrowForward } from "@mui/icons-material"
+import { Grid, Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import { Comment as CommentType } from "../../global/types"
 import { convertTimeStampToDate } from "../utils/convertTimestampToDate"
+import Button from "./Button"
 
 interface Props {
   comments: CommentType[]
@@ -19,17 +20,14 @@ export default function Comments({ comments, onAddComment }: Props) {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", paddingBottom: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", paddingBottom: 3 }}>
           <Box mr="auto" ml="auto">
             <Button
-              variant="text"
-              sx={{ lineHeight: 0 }}
+              sx={{ lineHeight: 0, textTransform: "capitalize" }}
               onClick={onAddComment}
+              endIcon={<ArrowForward />}
             >
-              Leave a comment{" "}
-              <Box sx={{ paddingLeft: 2 }}>
-                <Comment />
-              </Box>
+              Leave a comment
             </Button>
           </Box>
         </Box>

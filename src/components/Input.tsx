@@ -4,8 +4,8 @@ export default function Input(props: InputProps) {
   return (
     <MuiInput
       disableUnderline
+      style={{ borderRadius: 8 }}
       sx={{
-        borderRadius: 1,
         padding: 2,
         background: "#f2f2f2",
         marginBottom: 1,

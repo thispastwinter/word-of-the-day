@@ -1,5 +1,5 @@
 import { User } from "@firebase/auth"
-import { Group as GroupIcon } from "@mui/icons-material"
+import { GroupOutlined } from "@mui/icons-material"
 import {
   Avatar,
   Button,
@@ -114,11 +114,12 @@ export default function AppBar({
           flexDirection: "row",
           padding: ({ spacing }) => spacing(1, 2),
           alignItems: "center",
+          borderBottom: ({ palette }) => `2px solid ${palette.common.black}`,
         }}
       >
         {isNotPublic ? (
           <Box sx={{ flexDirection: "row", display: "flex" }}>
-            <GroupIcon color="inherit" />
+            <GroupOutlined color="inherit" />
             <Box pr={2} />
             <Typography>{group?.name}</Typography>
           </Box>

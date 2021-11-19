@@ -39,7 +39,7 @@ export default function Modal({
         sx={{
           width: "auto",
           padding: 2,
-          margin: 1,
+          margin: 2,
           height: "auto",
           display: "flex",
           flexDirection: "column",
@@ -47,9 +47,9 @@ export default function Modal({
         }}
       >
         {handleClose && (
-          <Box pb={1} sx={{ marginLeft: "auto" }}>
+          <Box sx={{ marginLeft: "auto" }}>
             <IconButton onClick={handleClose} sx={{ padding: 0 }}>
-              <Close fontSize="small" />
+              <Close fontSize="medium" />
             </IconButton>
           </Box>
         )}

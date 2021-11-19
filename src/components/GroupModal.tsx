@@ -1,4 +1,7 @@
-import { Button, Typography } from "@mui/material"
+import { ArrowForward } from "@mui/icons-material"
+import { Typography } from "@mui/material"
+import { Box } from "@mui/system"
+import Button from "./Button"
 import Input from "./Input"
 import Modal from "./Modal"
 
@@ -32,17 +35,26 @@ export default function GroupModal({
       onBackdropClick={onBackdropClick}
       handleClose={handleClose}
     >
+      <Typography sx={{ fontWeight: "600" }}>
+        Learning is better together
+      </Typography>
+      <Box pb={2} />
       <Typography pb={1} variant="body2">
         Join an existing group
       </Typography>
       <Input
         multiline
-        placeholder="Enter group id..."
+        placeholder="Enter group code"
         fullWidth
         value={groupId}
         onChange={(event) => onGroupIdChange(event.target.value)}
       />
-      <Button sx={{ marginLeft: "auto" }} onClick={onJoin}>
+      <Box mb={1} />
+      <Button
+        sx={{ marginLeft: "auto" }}
+        onClick={onJoin}
+        endIcon={<ArrowForward />}
+      >
         Join Group
       </Button>
       <Typography pb={1} variant="body2">
@@ -50,12 +62,17 @@ export default function GroupModal({
       </Typography>
       <Input
         multiline
-        placeholder="Enter a group name..."
+        placeholder="Enter a group name"
         fullWidth
         value={groupName}
         onChange={(event) => onGroupNameChange(event.target.value)}
       />
-      <Button sx={{ marginLeft: "auto" }} onClick={onCreate}>
+      <Box mb={1} />
+      <Button
+        sx={{ marginLeft: "auto" }}
+        onClick={onCreate}
+        endIcon={<ArrowForward />}
+      >
         Create Group
       </Button>
     </Modal>
