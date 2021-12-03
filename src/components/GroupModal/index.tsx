@@ -1,4 +1,5 @@
 import { ArrowForward } from "@mui/icons-material"
+import { Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import { useState } from "react"
 import Button from "../Button"
@@ -7,10 +8,12 @@ import Modal from "../Modal"
 import Header from "./Header"
 
 interface Props {
+  error: string
   onGroupNameChange: (value: string) => void
   onGroupIdChange: (value: string) => void
   onJoin: () => void
   onCreate: () => void
+  onGoBack: () => void
   groupName: string
   groupId: string
   open: boolean
@@ -21,10 +24,12 @@ interface Props {
 type FormSections = "home" | "join" | "create"
 
 export default function GroupModal({
+  error,
   onGroupNameChange,
   onGroupIdChange,
   onJoin,
   onCreate,
+  onGoBack,
   groupName,
   groupId,
   open,
@@ -34,6 +39,7 @@ export default function GroupModal({
   const [currentSection, setCurrentSection] = useState<FormSections>("home")
 
   const handleGoBack = () => {
+    onGoBack()
     setCurrentSection("home")
   }
 
@@ -107,9 +113,17 @@ export default function GroupModal({
             multiline
             placeholder="Enter group code"
             fullWidth
+            error={!!error}
             value={groupId}
             onChange={(event) => onGroupIdChange(event.target.value)}
           />
+          <Typography
+            sx={{ paddingBottom: 1 }}
+            variant="caption"
+            color="darkred"
+          >
+            {error}
+          </Typography>
           <Button onClick={onJoin} sx={{ marginLeft: "auto" }}>
             Join
           </Button>

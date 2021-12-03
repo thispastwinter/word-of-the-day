@@ -43,6 +43,7 @@ export default function AppBar({
   const [groupModalOpen, setGroupModalOpen] = useState(false)
   const [groupId, setGroupId] = useState("")
   const [groupName, setGroupName] = useState("")
+  const [error, setError] = useState<string>("")
   const { data: word } = useGetWordOfTheWeek(groups?.[0].id)
 
   const { data: groupById } = useGetGroupById(groupId)
@@ -62,7 +63,13 @@ export default function AppBar({
   }
 
   const closeGroupModal = () => {
+    resetForm()
     setGroupModalOpen(false)
+  }
+
+  const resetForm = () => {
+    setGroupId("")
+    setGroupName("")
   }
 
   const userArgs = {
@@ -90,9 +97,14 @@ export default function AppBar({
 
   const isNotPublic = group?.id !== IDs.PUBLIC_GROUP_ID
 
+  const alreadyBelongsToGroup =
+    groupById?.id && Object.keys(user.groups).includes(groupById?.id)
+
   return (
     <>
       <GroupModal
+        error={error}
+        onGoBack={resetForm}
         onGroupNameChange={setGroupName}
         onGroupIdChange={setGroupId}
         groupId={groupId}
@@ -101,7 +113,15 @@ export default function AppBar({
         handleClose={closeGroupModal}
         open={groupModalOpen}
         onCreate={() => createGroup()}
-        onJoin={() => updateUser(userArgs)}
+        onJoin={() => {
+          if (groupById?.id && !alreadyBelongsToGroup) {
+            updateUser(userArgs)
+          } else if (alreadyBelongsToGroup) {
+            setError("You already belong to this group")
+          } else {
+            setError("It looks like you've entered an invalid group code")
+          }
+        }}
       />
       <MuiAppBar
         color="transparent"
