@@ -70,6 +70,7 @@ export default function AppBar({
   const resetForm = () => {
     setGroupId("")
     setGroupName("")
+    setError("")
   }
 
   const userArgs = {
