@@ -9,6 +9,8 @@ import { getPartOfSpeech, getRandomNumber } from "../../global/utils"
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
 
+const db = admin.firestore()
+
 const config = functions.config()
 
 const headers = {
@@ -52,9 +54,7 @@ async function getWordOfTheWeek(groupId?: string) {
         groupId,
       })
 
-      admin
-        .firestore()
-        .collection(Collections.WORDS)
+      db.collection(Collections.WORDS)
         .add(wordOfTheWeek)
         .then((doc) => {
           admin
@@ -71,6 +71,8 @@ async function getWordOfTheWeek(groupId?: string) {
       console.error(`Word retrieval failed: ${err}`)
     })
 }
+
+const userCollection = admin.firestore().collection(Collections.USERS)
 
 exports.getRandomWord = functions.pubsub
   .schedule("0 0 * * *")
@@ -97,13 +99,16 @@ exports.shuffleWord = functions.https.onRequest((req, res) =>
 )
 
 exports.onSignIn = functions.auth.user().onCreate((user) => {
+  const newId = db.collection("_").doc().id
   const partialUser: UserPartial = {
+    displayName: user.displayName || "",
+    userId: user.uid,
     groups: {
       [IDs.PUBLIC_GROUP_ID]: "Public",
     },
     isAdmin: false,
-    id: user.uid,
+    id: newId,
   }
 
-  admin.firestore().collection(Collections.USERS).add(partialUser)
+  userCollection.doc(newId).set(partialUser)
 })
