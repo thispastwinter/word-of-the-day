@@ -1,5 +1,6 @@
 import { CircularProgress, ThemeProvider, createTheme } from "@mui/material"
 import { AppProps } from "next/dist/shared/lib/router/router"
+import { QueryClient, QueryClientProvider } from "react-query"
 import { Center } from "../components"
 import { useAuth } from "../hooks"
 import { colors } from "../theme"
@@ -18,20 +19,24 @@ const theme = createTheme({
   },
 })
 
+const client = new QueryClient()
+
 function App({ Component, pageProps }: AppProps) {
   const { user, loading } = useAuth()
 
   if (loading) {
     return (
       <Center fill>
-        <CircularProgress />
+        <CircularProgress style={{ color: colors.darkBlueSky }} />
       </Center>
     )
   } else {
     return (
-      <ThemeProvider theme={theme}>
-        <Component {...pageProps} user={user} />
-      </ThemeProvider>
+      <QueryClientProvider client={client}>
+        <ThemeProvider theme={theme}>
+          <Component {...pageProps} user={user} />
+        </ThemeProvider>
+      </QueryClientProvider>
     )
   }
 }

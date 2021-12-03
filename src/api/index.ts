@@ -1,5 +1,5 @@
 import getComments from "./getComments"
-import getGroupById from "./getGroupById"
+import getGroupsByIds from "./getGroupsByIds"
 import getWordOfTheWeek from "./getWordOfTheWeek"
 
-export { getWordOfTheWeek, getGroupById, getComments }
+export { getWordOfTheWeek, getGroupsByIds, getComments }

@@ -29,17 +29,23 @@ export default function useAuth() {
       if (firebaseUser) {
         setUser(firebaseUser)
         setAuthLoading(false)
-        router.push("/")
       } else {
         setUser(null)
         setAuthLoading(false)
-        router.push("/signin")
       }
     })
     return () => unsubscribe()
   }, [])
 
   const loading = authLoading || userLoading
+
+  useEffect(() => {
+    if (user != null && userPartial?.[0]) {
+      router.push("/")
+    } else {
+      router.push("/signin")
+    }
+  }, [user, userPartial])
 
   return { user: { ...user, ...userPartial?.[0] }, loading }
 }

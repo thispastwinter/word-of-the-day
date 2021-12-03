@@ -98,7 +98,9 @@ exports.shuffleWord = functions.https.onRequest((req, res) =>
 
 exports.onSignIn = functions.auth.user().onCreate((user) => {
   const partialUser: UserPartial = {
-    groupId: IDs.PUBLIC_GROUP_ID,
+    groups: {
+      [IDs.PUBLIC_GROUP_ID]: "Public",
+    },
     isAdmin: false,
     id: user.uid,
   }

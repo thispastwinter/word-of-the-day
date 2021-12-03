@@ -1,20 +1,37 @@
 import { User } from "@firebase/auth"
 import { CircularProgress, Typography } from "@mui/material"
 import { Box } from "@mui/system"
-import { useState } from "react"
-import { UserPartial } from "../../global/types"
+import { useCallback, useMemo, useState } from "react"
+import { Group, UserPartial } from "../../global/types"
 import { AppBar, Center, Modal, WordOfTheDay } from "../components"
 import { auth } from "../firebase"
 import { useGetWordOfTheWeek } from "../hooks"
-import useGetGroupById from "../hooks/useGetGroupById"
 
 interface Props {
   user: User & UserPartial
 }
 
 function Home({ user }: Props) {
-  const { data: word, loading: wordLoading } = useGetWordOfTheWeek(user.groupId)
-  const { group, loading: groupLoading } = useGetGroupById(user.groupId)
+  const sortAlphabetically = useCallback((itemA?: string, itemB?: string) => {
+    const valA = itemA?.toLowerCase() || ""
+    const valB = itemB?.toLowerCase() || ""
+    return valA > valB ? 1 : -1
+  }, [])
+
+  const groups = useMemo(
+    () =>
+      Object.entries(user.groups)
+        .map(([id, name]) => ({ id, name }))
+        .sort((a, b) => sortAlphabetically(a.name, b.name)),
+    [user, sortAlphabetically],
+  )
+
+  const [currentGroup, setCurrentGroup] = useState<Group | undefined>(groups[0])
+
+  const { data: word, isLoading: wordLoading } = useGetWordOfTheWeek(
+    currentGroup?.id,
+  )
+
   const [settingsModalOpen, setSettingsModalOpen] = useState(false)
 
   const openSettings = () => {
@@ -25,7 +42,7 @@ function Home({ user }: Props) {
     setSettingsModalOpen(false)
   }
 
-  const loading = wordLoading || groupLoading
+  const loading = wordLoading
 
   return (
     <>
@@ -39,7 +56,7 @@ function Home({ user }: Props) {
             Your Group ID:
           </Typography>
           <Typography sx={{ textAlign: "center" }} variant="body2">
-            {user.groupId}
+            {currentGroup?.id}
           </Typography>
         </Box>
         <Typography
@@ -50,22 +67,24 @@ function Home({ user }: Props) {
           only share your group id with people you trust
         </Typography>
       </Modal>
-      <AppBar
-        group={group}
-        user={user}
-        onSettingsClick={openSettings}
-        onSignOutClick={() => auth.signOut()}
-      />
-      <Center
-        sx={{
-          marginTop: 24,
-        }}
-      >
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <WordOfTheDay word={word} user={user} />
-        )}
+      {groups && currentGroup && (
+        <AppBar
+          group={currentGroup}
+          groups={groups}
+          onGroupSelect={setCurrentGroup}
+          user={user}
+          onSettingsClick={openSettings}
+          onSignOutClick={() => auth.signOut()}
+        />
+      )}
+      <Center fill>
+        <Box px={1}>
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <WordOfTheDay word={word} user={user} currentGroup={currentGroup} />
+          )}
+        </Box>
       </Center>
     </>
   )

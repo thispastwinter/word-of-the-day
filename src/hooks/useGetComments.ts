@@ -4,7 +4,7 @@ import { Collections } from "../../global/constants"
 import { Comment } from "../../global/types"
 import { db } from "../firebase"
 
-export default function useGetComments(wordId: string, groupId: string) {
+export default function useGetComments(wordId: string, groupId?: string) {
   const commentsRef = collection(db, Collections.COMMENTS)
   const commentsQuery = query(
     commentsRef,

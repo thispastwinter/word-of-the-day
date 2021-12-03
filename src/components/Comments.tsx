@@ -20,7 +20,7 @@ export default function Comments({ comments, onAddComment }: Props) {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", paddingBottom: 3 }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box mr="auto" ml="auto">
             <Button
               sx={{ lineHeight: 0, textTransform: "capitalize" }}
@@ -36,25 +36,22 @@ export default function Comments({ comments, onAddComment }: Props) {
             key={comment.id}
             sx={{
               display: "flex",
-              alignItems: "center",
+              flexDirection: "column",
+              pt: 2,
             }}
           >
-            <Typography
-              sx={{ paddingRight: 2, fontWeight: 600 }}
-              variant="body2"
-            >
-              {comment.displayName}:
-            </Typography>
-            <Typography sx={{ paddingRight: 2 }} variant="body2">
-              {comment.body}
-            </Typography>
-            <Typography variant="body2" color="gray">
-              @
-              {convertTimeStampToDate(
-                comment.createdAt.seconds,
-                comment.createdAt.nanoseconds,
-              )}
-            </Typography>
+            <Typography variant="body2">{comment.body}</Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography sx={{ fontWeight: 600, pr: 1 }} variant="caption">
+                {comment.displayName}
+              </Typography>
+              <Typography variant="caption" color="gray">
+                {convertTimeStampToDate(
+                  comment.createdAt.seconds,
+                  comment.createdAt.nanoseconds,
+                )}
+              </Typography>
+            </Box>
           </Box>
         ))}
       </Box>

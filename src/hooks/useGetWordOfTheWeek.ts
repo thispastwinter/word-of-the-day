@@ -6,12 +6,13 @@ import {
   query,
   where,
 } from "@firebase/firestore"
-import { useCollectionData } from "react-firebase-hooks/firestore"
+import { useFirestoreQueryData } from "@react-query-firebase/firestore"
+import { useEffect } from "react"
 import { Collections } from "../../global/constants"
 import { Word } from "../../global/types"
 import { db } from "../firebase"
 
-export default function useGetWordOfTheWeek(groupId: string) {
+export default function useGetWordOfTheWeek(groupId?: string) {
   const wordRef = collection(db, Collections.WORDS)
   const wordQuery = query(
     wordRef,
@@ -20,9 +21,16 @@ export default function useGetWordOfTheWeek(groupId: string) {
     limit(1),
   ) as Query<Word>
 
-  const [data, loading, error] = useCollectionData(wordQuery, {
-    idField: "id",
-  })
+  const { data, isLoading, error, refetch } = useFirestoreQueryData(
+    ["word"],
+    wordQuery,
+    undefined,
+    { enabled: !!groupId },
+  )
 
-  return { data: data?.[0], loading, error }
+  useEffect(() => {
+    if (groupId) refetch()
+  }, [groupId, refetch])
+
+  return { data: data?.[0], isLoading, error }
 }

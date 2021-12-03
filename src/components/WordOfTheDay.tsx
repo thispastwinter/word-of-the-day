@@ -3,7 +3,7 @@ import { Timestamp } from "@firebase/firestore"
 import { Card, Grid, Typography } from "@mui/material"
 import { useMemo, useState } from "react"
 import { IDs } from "../../global/constants"
-import { UserPartial, Word } from "../../global/types"
+import { Group, UserPartial, Word } from "../../global/types"
 import createComment from "../api/createComment"
 import { useGetComments } from "../hooks"
 import CommentModal from "./CommentModal"
@@ -12,9 +12,10 @@ import Comments from "./Comments"
 interface Props {
   word?: Word
   user: User & UserPartial
+  currentGroup?: Group
 }
 
-export default function WordOfTheDay({ word, user }: Props) {
+export default function WordOfTheDay({ word, user, currentGroup }: Props) {
   const [open, setOpen] = useState(false)
   const [body, setBody] = useState("")
 
@@ -22,7 +23,7 @@ export default function WordOfTheDay({ word, user }: Props) {
     throw new Error("Error fetching word!")
   }
 
-  const { data } = useGetComments(word.id, user.groupId)
+  const { data } = useGetComments(word.id, currentGroup?.id)
 
   const { definition, word: value, phoneticSpelling, partOfSpeech } = word
 
@@ -40,18 +41,20 @@ export default function WordOfTheDay({ word, user }: Props) {
 
   const closeModal = () => {
     setOpen(false)
+    setBody("")
   }
 
   const onSubmit = () => {
     createComment({
       body,
-      groupId: user.groupId,
+      groupId: currentGroup?.id,
       userId: user.id || "",
       wordId: word.id,
       displayName: user.displayName || "",
       createdAt: Timestamp.now(),
     })
     setOpen(false)
+    setBody("")
   }
 
   return (
@@ -99,7 +102,7 @@ export default function WordOfTheDay({ word, user }: Props) {
             )}
           </Card>
         </Grid>
-        {user.groupId !== IDs.PUBLIC_GROUP_ID && (
+        {currentGroup?.id !== IDs.PUBLIC_GROUP_ID && (
           <Comments comments={data || []} onAddComment={openModal} />
         )}
       </Grid>

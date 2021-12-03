@@ -5,7 +5,7 @@ export default function Button(props: ButtonProps) {
     <MuiButton
       disableElevation
       variant="contained"
-      sx={{ borderRadius: 48 }}
+      style={{ borderRadius: 48 }}
       {...props}
     />
   )

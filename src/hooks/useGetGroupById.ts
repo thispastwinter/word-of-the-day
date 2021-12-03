@@ -1,17 +1,28 @@
-import { useEffect, useState } from "react"
+import { DocumentReference, doc } from "@firebase/firestore"
+import { useFirestoreDocument } from "@react-query-firebase/firestore"
+import { Collections } from "../../global/constants"
 import { Group } from "../../global/types"
-import { getGroupById } from "../api"
+import { db } from "../firebase"
 
 export default function useGetGroupById(groupId: string) {
-  const [loading, setLoading] = useState(true)
-  const [group, setGroup] = useState<Group | undefined>()
+  let ref: DocumentReference<Group>
 
-  useEffect(() => {
-    getGroupById(groupId).then((group) => {
-      setGroup(group)
-      setLoading(false)
-    })
-  }, [groupId])
+  if (groupId) {
+    ref = doc(db, Collections.GROUPS, groupId) as DocumentReference<Group>
+  } else {
+    ref = doc(db, Collections.GROUPS, "empty") as DocumentReference<Group>
+  }
 
-  return { group, loading }
+  const { data, isLoading, error } = useFirestoreDocument<Group>(
+    ["groupById", groupId],
+    ref,
+    undefined,
+    {
+      enabled: !!groupId,
+    },
+  )
+
+  console.log(data?.data())
+
+  return { data: data?.data(), isLoading, error }
 }

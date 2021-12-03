@@ -1,6 +1,6 @@
 interface UserPartial {
   id: string | null
-  groupId: string
+  groups: Record<string, string>
   isAdmin: boolean
 }
 

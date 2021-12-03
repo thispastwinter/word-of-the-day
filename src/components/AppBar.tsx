@@ -4,36 +4,48 @@ import {
   Avatar,
   Button,
   IconButton,
+  MenuItem,
   AppBar as MuiAppBar,
-  Typography,
+  Select,
 } from "@mui/material"
 import { Box } from "@mui/system"
 import { useMemo, useState } from "react"
 import { Collections, IDs } from "../../global/constants"
-import { Group, UserPartial, Word } from "../../global/types"
-import { useFirestoreMutation, useGetWordOfTheWeek } from "../hooks"
+import { Group, UserPartial } from "../../global/types"
+import {
+  useCreateGroup,
+  useFirestoreMutation,
+  useGetGroupById,
+  useGetWordOfTheWeek,
+} from "../hooks"
 import { getInitials } from "../utils/getInitials"
 import AppBarMenu from "./AppBarMenu"
 import GroupModal from "./GroupModal"
 
 interface Props {
   user: User & UserPartial
+  onGroupSelect: (currentGroup: Group) => void
   onSignOutClick: () => void
   onSettingsClick: () => void
   group?: Group
+  groups?: Group[]
 }
 
 export default function AppBar({
   user,
+  onGroupSelect,
   onSettingsClick,
   onSignOutClick,
   group,
+  groups,
 }: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const [groupModalOpen, setGroupModalOpen] = useState(false)
   const [groupId, setGroupId] = useState("")
   const [groupName, setGroupName] = useState("")
-  const { data: word } = useGetWordOfTheWeek(user.groupId)
+  const { data: word } = useGetWordOfTheWeek(groups?.[0].id)
+
+  const { data: groupById } = useGetGroupById(groupId)
 
   const popOverOpen = Boolean(anchorEl)
 
@@ -56,35 +68,19 @@ export default function AppBar({
   const userArgs = {
     collection: Collections.USERS,
     docId: user.id || "",
-    data: { groupId },
+    data: { groups: { ...user.groups, [groupId]: groupById?.name || "" } },
     options: {
       onCompleted: closeGroupModal,
     },
   }
 
-  const [updateUser] = useFirestoreMutation<Partial<UserPartial>>(userArgs)
+  const [updateUser] = useFirestoreMutation<Partial<UserPartial>>()
 
-  const [createWordForGroup] = useFirestoreMutation<Partial<Word>>()
-
-  const [createGroup] = useFirestoreMutation<Partial<Group>>({
-    collection: Collections.GROUPS,
-    data: { name: groupName },
-    options: {
-      automaticallySetId: true,
-      onCompleted: (doc) => {
-        if (doc?.id) {
-          setGroupId(doc.id)
-          updateUser({ ...userArgs, data: { groupId: doc.id, isAdmin: true } })
-          createWordForGroup({
-            collection: Collections.WORDS,
-            data: { ...word, groupId: doc.id },
-            options: {
-              automaticallySetId: true,
-            },
-          })
-        }
-      },
-    },
+  const { createGroup } = useCreateGroup({
+    groupName,
+    onCompleted: closeGroupModal,
+    user,
+    word,
   })
 
   const avatarInitials = useMemo(
@@ -92,7 +88,7 @@ export default function AppBar({
     [user],
   )
 
-  const isNotPublic = !!user.groupId && user.groupId !== IDs.PUBLIC_GROUP_ID
+  const isNotPublic = group?.id !== IDs.PUBLIC_GROUP_ID
 
   return (
     <>
@@ -105,7 +101,7 @@ export default function AppBar({
         handleClose={closeGroupModal}
         open={groupModalOpen}
         onCreate={() => createGroup()}
-        onJoin={() => updateUser()}
+        onJoin={() => updateUser(userArgs)}
       />
       <MuiAppBar
         color="transparent"
@@ -117,15 +113,33 @@ export default function AppBar({
           borderBottom: ({ palette }) => `2px solid ${palette.common.black}`,
         }}
       >
-        {isNotPublic ? (
-          <Box sx={{ flexDirection: "row", display: "flex" }}>
-            <GroupOutlined color="inherit" />
-            <Box pr={2} />
-            <Typography>{group?.name}</Typography>
-          </Box>
-        ) : (
-          <Button onClick={openGroupModal}>Join A Group</Button>
-        )}
+        <Box sx={{ flexDirection: "row", display: "flex" }}>
+          <GroupOutlined color="inherit" />
+          <Box pr={2} />
+          <Select
+            sx={{ height: 28 }}
+            value={group?.id}
+            onChange={(event) => {
+              const groupId = event.target.value as Group["id"]
+              const group = groups?.find((group) => group.id === groupId)
+              group && onGroupSelect(group)
+            }}
+          >
+            {groups?.map((group) => (
+              <MenuItem key={group.id} value={group?.id}>
+                {group?.name}
+              </MenuItem>
+            ))}
+            <MenuItem>
+              <Button
+                onClick={openGroupModal}
+                sx={{ textTransform: "capitalize", p: 0 }}
+              >
+                Join or Create a group
+              </Button>
+            </MenuItem>
+          </Select>
+        </Box>
         <Box sx={{ marginLeft: "auto" }}>
           <AppBarMenu
             anchorEl={anchorEl}

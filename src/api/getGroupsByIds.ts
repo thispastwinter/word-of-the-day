@@ -3,12 +3,18 @@ import { Collections } from "../../global/constants"
 import { Group } from "../../global/types"
 import { db } from "../firebase"
 
-const getWordOfTheWeek = async (groupId: string) => {
+const getGroupsByIds = async (groupIds: string[]) => {
+  const groups: Group[] = []
+
   const groupRef = collection(db, Collections.GROUPS)
-  const groupQuery = query(groupRef, where("id", "==", `${groupId}`))
+  const groupQuery = query(groupRef, where("id", "in", groupIds))
   const data = await getDocs(groupQuery)
-  const group = data?.docs?.[0]?.data() as Group | undefined
-  return group
+  data?.docs?.forEach((doc) => {
+    groups.push(doc.data() as Group)
+  })
+
+  console.log({ groups })
+  return groups
 }
 
-export default getWordOfTheWeek
+export default getGroupsByIds

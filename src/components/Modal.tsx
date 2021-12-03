@@ -31,6 +31,7 @@ export default function Modal({
         alignItems: "center",
         ...sx,
       }}
+      style={{ outline: "none" }}
       open={open}
       onBackdropClick={onBackdropClick}
       onClose={onClose}
@@ -43,6 +44,8 @@ export default function Modal({
           height: "auto",
           display: "flex",
           flexDirection: "column",
+          outline: 0,
+
           ...cardSx,
         }}
       >

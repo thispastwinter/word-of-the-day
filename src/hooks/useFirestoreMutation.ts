@@ -20,30 +20,31 @@ interface Args<T> {
   options?: Options
 }
 
-export default function useFirestoreMutation<T>(
-  initialArgs: Args<T> = {} as Args<T>,
-) {
-  const { collection, data, docId, options } = initialArgs
-  const firestoreMutation = async (args?: Args<T>) => {
-    if (args) {
-      initialArgs.collection = args.collection
-      initialArgs.data = args.data
-      initialArgs.docId = args.docId
-      initialArgs.options = args.options
+export default function useFirestoreMutation<T>(args: Args<T> = {} as Args<T>) {
+  const firestoreMutation = async (innerArgs?: Args<T>) => {
+    if (innerArgs) {
+      args.collection = innerArgs.collection
+      args.data = innerArgs.data
+      args.docId = innerArgs.docId
+      args.options = innerArgs.options
     }
+    const { docId, collection, data, options } = args
     if (docId) {
+      console.log("I MADE IT", collection)
       const ref = doc(db, collection, docId)
-      await updateDoc(ref, data)
+      updateDoc(ref, data)
         .then(() => options?.onCompleted?.(undefined))
         .catch((error) => console.error(error))
     } else {
-      await addDoc(firestoreCollection(db, collection), data)
-        .then(async (document) => {
+      console.log(collection)
+      const ref = firestoreCollection(db, collection)
+      addDoc(ref, data)
+        .then((document) => {
           const docId = document.id
           const ref = doc(db, collection, docId)
 
           if (options?.automaticallySetId) {
-            await updateDoc(ref, { id: docId })
+            updateDoc(ref, { id: docId })
             options?.onCompleted?.(document)
           }
 

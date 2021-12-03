@@ -7,8 +7,8 @@ export default function Input(props: InputProps) {
       style={{ borderRadius: 8 }}
       sx={{
         padding: 2,
-        background: "#f2f2f2",
         marginBottom: 1,
+        border: "1px solid #E3E5E5",
       }}
       {...props}
     />
