@@ -22,7 +22,5 @@ export default function useGetGroupById(groupId: string) {
     },
   )
 
-  console.log(data?.data())
-
   return { data: data?.data(), isLoading, error }
 }

@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { User } from "@firebase/auth"
 import { Query, collection, query, where } from "@firebase/firestore"
-import { useRouter } from "next/dist/client/router"
 import { useEffect, useState } from "react"
 import { useCollectionData } from "react-firebase-hooks/firestore"
 import { Collections } from "../../global/constants"
@@ -22,10 +20,8 @@ export default function useAuth() {
     idField: "id",
   })
 
-  const router = useRouter()
-
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser)
         setAuthLoading(false)
@@ -34,18 +30,10 @@ export default function useAuth() {
         setAuthLoading(false)
       }
     })
-    return () => unsubscribe()
+    return unsubscribe
   }, [])
 
   const loading = authLoading || userLoading
 
-  useEffect(() => {
-    if (user != null && userPartial?.[0]) {
-      router.push("/")
-    } else {
-      router.push("/signin")
-    }
-  }, [user, userPartial])
-
-  return { user: { ...user, ...userPartial?.[0] }, loading }
+  return { user: user ? { ...user, ...userPartial?.[0] } : null, loading }
 }

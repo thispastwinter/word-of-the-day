@@ -27,7 +27,6 @@ export default function useCreateGroup({
       automaticallySetId: true,
       onCompleted: (doc) => {
         if (doc?.id && user.id) {
-          console.log(user.id)
           updateUser({
             collection: Collections.USERS,
             docId: user.id,

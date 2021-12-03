@@ -1,12 +1,21 @@
+import { User } from "@firebase/auth"
 import { Box } from "@mui/system"
 import Image from "next/image"
+import { UserPartial } from "../../../global/types"
 import googleSignIn from "../../assets/googleSignIn.svg"
-import { Center } from "../../components"
-import { useAuth, useSignIn } from "../../hooks"
+import { Center, Redirect } from "../../components"
+import { useSignIn } from "../../hooks"
 
-export default function SignIn() {
+interface Props {
+  user: User & UserPartial
+}
+
+export default function SignIn({ user }: Props) {
   const { signInWithGoogle } = useSignIn()
-  useAuth()
+
+  if (user) {
+    return <Redirect to="/" />
+  }
 
   return (
     <Center fill>

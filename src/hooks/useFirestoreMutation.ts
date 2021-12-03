@@ -30,13 +30,11 @@ export default function useFirestoreMutation<T>(args: Args<T> = {} as Args<T>) {
     }
     const { docId, collection, data, options } = args
     if (docId) {
-      console.log("I MADE IT", collection)
       const ref = doc(db, collection, docId)
       updateDoc(ref, data)
         .then(() => options?.onCompleted?.(undefined))
         .catch((error) => console.error(error))
     } else {
-      console.log(collection)
       const ref = firestoreCollection(db, collection)
       addDoc(ref, data)
         .then((document) => {

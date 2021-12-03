@@ -13,7 +13,6 @@ const getGroupsByIds = async (groupIds: string[]) => {
     groups.push(doc.data() as Group)
   })
 
-  console.log({ groups })
   return groups
 }
 

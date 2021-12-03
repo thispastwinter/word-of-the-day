@@ -2,10 +2,10 @@ import { User } from "@firebase/auth"
 import { CircularProgress, Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import { useCallback, useMemo, useState } from "react"
-import { Group, UserPartial } from "../../global/types"
-import { AppBar, Center, Modal, WordOfTheDay } from "../components"
-import { auth } from "../firebase"
-import { useGetWordOfTheWeek } from "../hooks"
+import { Group, UserPartial } from "../../../global/types"
+import { AppBar, Center, Modal, Redirect, WordOfTheDay } from "../../components"
+import { auth } from "../../firebase"
+import { useGetWordOfTheWeek } from "../../hooks"
 
 interface Props {
   user: User & UserPartial
@@ -18,13 +18,15 @@ function Home({ user }: Props) {
     return valA > valB ? 1 : -1
   }, [])
 
-  const groups = useMemo(
-    () =>
-      Object.entries(user.groups)
+  const groups = useMemo(() => {
+    if (user?.groups) {
+      return Object.entries(user?.groups)
         .map(([id, name]) => ({ id, name }))
-        .sort((a, b) => sortAlphabetically(a.name, b.name)),
-    [user, sortAlphabetically],
-  )
+        .sort((a, b) => sortAlphabetically(a.name, b.name))
+    } else {
+      return []
+    }
+  }, [user, sortAlphabetically])
 
   const [currentGroup, setCurrentGroup] = useState<Group | undefined>(groups[0])
 
@@ -43,6 +45,10 @@ function Home({ user }: Props) {
   }
 
   const loading = wordLoading
+
+  if (!user) {
+    return <Redirect to="signin" />
+  }
 
   return (
     <>
