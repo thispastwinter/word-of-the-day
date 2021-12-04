@@ -18,10 +18,11 @@ export default function Comments({ comments, onAddComment }: Props) {
         sx={{
           display: "flex",
           flexDirection: "column",
+          maxWidth: 600,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Box mr="auto" ml="auto">
+          <Box mr="auto" ml="auto" pb={1}>
             <Button
               sx={{ lineHeight: 0, textTransform: "capitalize" }}
               onClick={onAddComment}
@@ -40,7 +41,9 @@ export default function Comments({ comments, onAddComment }: Props) {
               pt: 2,
             }}
           >
-            <Typography variant="body2">{comment.body}</Typography>
+            <Typography variant="body2" sx={{ pb: 0.5 }}>
+              {comment.body}
+            </Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ fontWeight: 600, pr: 1 }} variant="caption">
                 {comment.displayName}

@@ -1,6 +1,7 @@
 import { Close } from "@mui/icons-material"
-import { Button, IconButton } from "@mui/material"
+import { Button, IconButton, Typography } from "@mui/material"
 import { Box } from "@mui/system"
+import { useEffect, useState } from "react"
 import Input from "./Input"
 import Modal from "./Modal"
 
@@ -19,6 +20,23 @@ export default function CommentModal({
   handleClose,
   open,
 }: Props) {
+  const [error, setError] = useState("")
+  const maxCharacters = 500
+
+  useEffect(() => {
+    if (value.length <= maxCharacters) {
+      setError("")
+    } else {
+      setError("Cannot exceed 500 characters")
+    }
+  }, [error, value])
+
+  const handleSubmit = () => {
+    if (value.length <= maxCharacters) {
+      onSubmit()
+    }
+  }
+
   return (
     <Modal
       cardSx={{ maxWidth: 400, width: "100%" }}
@@ -38,8 +56,12 @@ export default function CommentModal({
         maxRows={10}
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        error={!!error}
       />
-      <Button sx={{ marginLeft: "auto" }} onClick={onSubmit}>
+      <Typography variant="caption" color="darkRed">
+        {error}
+      </Typography>
+      <Button sx={{ marginLeft: "auto" }} onClick={handleSubmit}>
         Submit
       </Button>
     </Modal>

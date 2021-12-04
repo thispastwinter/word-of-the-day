@@ -83,7 +83,7 @@ function Home({ user }: Props) {
           onSignOutClick={() => auth.signOut()}
         />
       )}
-      <Center fill>
+      <Center sx={{ marginTop: "74px", paddingTop: 6 }}>
         <Box px={1}>
           {loading ? (
             <CircularProgress />

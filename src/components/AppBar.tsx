@@ -125,7 +125,7 @@ export default function AppBar({
         }}
       />
       <MuiAppBar
-        color="transparent"
+        color="inherit"
         sx={{
           boxShadow: "none",
           flexDirection: "row",
