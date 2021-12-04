@@ -1,5 +1,6 @@
 import useAuth from "./useAuth"
 import useCreateGroup from "./useCreateGroup"
+import useDebounce from "./useDebounce"
 import useFirestoreMutation from "./useFirestoreMutation"
 import useGetComments from "./useGetComments"
 import useGetGroupById from "./useGetGroupById"
@@ -12,6 +13,7 @@ import useWindowSize from "./useWindowSize"
 export {
   useGetWordOfTheWeek,
   useCreateGroup,
+  useDebounce,
   useWindowSize,
   useGetComments,
   useGetGroupById,

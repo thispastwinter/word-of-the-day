@@ -4,10 +4,14 @@ import { Collections } from "../../global/constants"
 import { Group } from "../../global/types"
 import { db } from "../firebase"
 
-export default function useGetGroupById(groupId: string) {
+export default function useGetGroupById(groupId?: string) {
   let ref: DocumentReference<Group>
 
-  if (groupId) {
+  const regex = /^[a-zA-Z]*$/
+
+  const containsOnlyLetters = groupId && regex.test(groupId)
+
+  if (containsOnlyLetters) {
     ref = doc(db, Collections.GROUPS, groupId) as DocumentReference<Group>
   } else {
     ref = doc(db, Collections.GROUPS, "empty") as DocumentReference<Group>
@@ -18,7 +22,7 @@ export default function useGetGroupById(groupId: string) {
     ref,
     undefined,
     {
-      enabled: !!groupId,
+      enabled: !!containsOnlyLetters,
     },
   )
 

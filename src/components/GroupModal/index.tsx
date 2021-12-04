@@ -59,7 +59,7 @@ export default function GroupModal({
   return (
     <Modal
       cardSx={{
-        maxHeight: 225,
+        minHeight: 225,
         width: 300,
         justifyContent: "center",
       }}
