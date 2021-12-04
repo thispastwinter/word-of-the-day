@@ -7,7 +7,6 @@ import {
   where,
 } from "@firebase/firestore"
 import { useFirestoreQueryData } from "@react-query-firebase/firestore"
-import { useEffect } from "react"
 import { Collections } from "../../global/constants"
 import { Word } from "../../global/types"
 import { db } from "../firebase"
@@ -21,16 +20,12 @@ export default function useGetWordOfTheWeek(groupId?: string) {
     limit(1),
   ) as Query<Word>
 
-  const { data, isLoading, error, refetch } = useFirestoreQueryData(
-    ["word"],
+  const { data, isLoading, error } = useFirestoreQueryData(
+    ["wordByGroupId", groupId],
     wordQuery,
-    undefined,
+    { subscribe: true },
     { enabled: !!groupId },
   )
-
-  useEffect(() => {
-    if (groupId) refetch()
-  }, [groupId, refetch])
 
   return { data: data?.[0], isLoading, error }
 }
