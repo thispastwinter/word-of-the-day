@@ -7,9 +7,10 @@ import {
   MenuItem,
   AppBar as MuiAppBar,
   Select,
+  SelectChangeEvent,
 } from "@mui/material"
 import { Box } from "@mui/system"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Collections, IDs } from "../../global/constants"
 import { Group, UserPartial } from "../../global/types"
 import {
@@ -62,10 +63,10 @@ export default function AppBar({
     setGroupModalOpen(true)
   }
 
-  const closeGroupModal = () => {
+  const closeGroupModal = useCallback(() => {
     resetForm()
     setGroupModalOpen(false)
-  }
+  }, [])
 
   const resetForm = () => {
     setGroupId("")
@@ -73,14 +74,17 @@ export default function AppBar({
     setError("")
   }
 
-  const userArgs = {
-    collection: Collections.USERS,
-    docId: user.id || "",
-    data: { groups: { ...user.groups, [groupId]: groupById?.name || "" } },
-    options: {
-      onCompleted: closeGroupModal,
-    },
-  }
+  const userArgs = useMemo(
+    () => ({
+      collection: Collections.USERS,
+      docId: user.id || "",
+      data: { groups: { ...user.groups, [groupId]: groupById?.name || "" } },
+      options: {
+        onCompleted: closeGroupModal,
+      },
+    }),
+    [user, groupById, closeGroupModal, groupId],
+  )
 
   const [updateUser] = useFirestoreMutation<Partial<UserPartial>>()
 
@@ -98,8 +102,31 @@ export default function AppBar({
 
   const isNotPublic = group?.id !== IDs.PUBLIC_GROUP_ID
 
-  const alreadyBelongsToGroup =
-    groupById?.id && Object.keys(user.groups).includes(groupById?.id)
+  const onCreate = () => {
+    createGroup()
+  }
+
+  const handleChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      const groupId = event.target.value as Group["id"]
+      const group = groups?.find((group) => group.id === groupId)
+      group && onGroupSelect(group)
+    },
+    [groups, onGroupSelect],
+  )
+
+  const onJoin = useCallback(() => {
+    const groupIds = Object.keys(user.groups)
+    const alreadyBelongsToGroup = groupIds.find((id) => id === groupId)
+
+    if (alreadyBelongsToGroup) {
+      setError("You already belong to this group")
+    } else if (groupById?.id) {
+      updateUser(userArgs)
+    } else {
+      setError("It looks like you've entered an invalid group code")
+    }
+  }, [groupById, userArgs, updateUser, user, groupId])
 
   return (
     <>
@@ -113,16 +140,8 @@ export default function AppBar({
         onBackdropClick={closeGroupModal}
         handleClose={closeGroupModal}
         open={groupModalOpen}
-        onCreate={() => createGroup()}
-        onJoin={() => {
-          if (groupById?.id && !alreadyBelongsToGroup) {
-            updateUser(userArgs)
-          } else if (alreadyBelongsToGroup) {
-            setError("You already belong to this group")
-          } else {
-            setError("It looks like you've entered an invalid group code")
-          }
-        }}
+        onCreate={onCreate}
+        onJoin={onJoin}
       />
       <MuiAppBar
         color="inherit"
@@ -137,15 +156,7 @@ export default function AppBar({
         <Box sx={{ flexDirection: "row", display: "flex" }}>
           <GroupOutlined color="inherit" />
           <Box pr={2} />
-          <Select
-            sx={{ height: 28 }}
-            value={group?.id}
-            onChange={(event) => {
-              const groupId = event.target.value as Group["id"]
-              const group = groups?.find((group) => group.id === groupId)
-              group && onGroupSelect(group)
-            }}
-          >
+          <Select sx={{ height: 28 }} value={group?.id} onChange={handleChange}>
             {groups?.map((group) => (
               <MenuItem key={group.id} value={group?.id}>
                 {group?.name}
