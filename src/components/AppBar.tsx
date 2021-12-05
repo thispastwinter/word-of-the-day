@@ -119,6 +119,8 @@ export default function AppBar({
     const groupIds = Object.keys(user.groups)
     const alreadyBelongsToGroup = groupIds.find((id) => id === groupId)
 
+    console.log(alreadyBelongsToGroup, groupById?.id)
+
     if (alreadyBelongsToGroup) {
       setError("You already belong to this group")
     } else if (groupById?.id) {
@@ -126,7 +128,7 @@ export default function AppBar({
     } else {
       setError("It looks like you've entered an invalid group code")
     }
-  }, [groupById, userArgs, updateUser, user, groupId])
+  }, [userArgs, updateUser, user, groupId, groupById])
 
   return (
     <>

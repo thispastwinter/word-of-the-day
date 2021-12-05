@@ -7,7 +7,7 @@ import { db } from "../firebase"
 export default function useGetGroupById(groupId?: string) {
   let ref: DocumentReference<Group>
 
-  const regex = /^[a-zA-Z]*$/
+  const regex = /^[a-zA-Z0-9-]*$/
 
   const containsOnlyLetters = groupId && regex.test(groupId)
 
