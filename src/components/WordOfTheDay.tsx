@@ -71,8 +71,9 @@ export default function WordOfTheDay({ word, user, currentGroup }: Props) {
         direction="column"
         justifyContent="center"
         alignItems="center"
+        sx={{ maxWidth: 600 }}
       >
-        <Grid container direction="column" sx={{ maxWidth: 500 }}>
+        <Grid container direction="column">
           <Card
             sx={{
               marginRight: 2,
